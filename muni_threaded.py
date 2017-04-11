@@ -15,8 +15,11 @@ from datetime import datetime as dt
 import datetime
 import timeit
 
+#Spawn threads or processes?
 from multiprocessing.dummy import Pool as ThreadPool
+#from multiprocessing import Pool as ThreadPool
 from multiprocessing import freeze_support
+from multiprocessing import cpu_count
 
 try:
 	import requests
@@ -172,7 +175,6 @@ class MuniRegister(object):
 		url_faecher = ("https://is.muni.cz/auth/student/zapis?studium=%s;obdobi=%s") % (self.studium, self.season)
 
 		header={
-				"Host" : "is.muni.cz",
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 				"Accept-Language" : "en-US,en;q=0.5",
@@ -180,6 +182,7 @@ class MuniRegister(object):
 				"Referer" : "https://is.muni.cz/auth/student/?studium=%s;lvs=p" % (self.studium),
 				}
 
+		#IS SOMETHING WRONG HERE? 10% chance the program will crash here
 		web_faecher = self.session.get(url_faecher, headers=header, allow_redirects=True)
 		web_faecher.encoding = 'utf-8'
 
@@ -226,7 +229,6 @@ class MuniRegister(object):
 		listOfRegURLs = []
 
 		header1={
-				"Host" : "is.muni.cz",
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 				"Accept-Language" : "en-US,en;q=0.5",
@@ -270,7 +272,6 @@ class MuniRegister(object):
 		lesson_id = (re.findall('(?<=predmet\=)\d+', url))[0]
 
 		header2={
-				"Host" : "is.muni.cz",
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 				"Accept-Language" : "en-US,en;q=0.5",
@@ -288,13 +289,16 @@ class MuniRegister(object):
 		#print "[%s / %s] -> %s" % (lessonName, lessonGroup, self.getTextOnly(message[0]))
 		print "[%s] -> %s" % (lesson_id, self.getTextOnly(message[0]))
 
+	def __call__(self, x):
+		return self.registerLesson(x)
+
 
 if __name__ == "__main__":
 	freeze_support()
 
 	filename = "seminars.txt"
 
-	username = "Student ID"
+	username = "userID"
 	password = "password"
 
 	season = "6684"
@@ -305,13 +309,21 @@ if __name__ == "__main__":
 	sa.login()
 
 	userData = sa.loadDataFromFile(filename)
+
+	# :(
 	processedData = sa.processData(userData)
 
+	#get list of URLs which will be clicked
 	regURLs = sa.prepareRegistrationURLs(userData, processedData)
 
-	def threadPoolExecutor(appendix_stuff):
-		pool = ThreadPool(8)
-		results = pool.map(sa.registerLesson, regURLs)
+	pool = ThreadPool(cpu_count())
+	start = 0
+
+	def threadPoolExecutor(param):
+		global start
+		start = timeit.default_timer()
+
+		results = pool.map(sa, param)
 		pool.close()
 		pool.join()
 
@@ -324,18 +336,16 @@ if __name__ == "__main__":
 	scheduler = sched.scheduler(time.time, time.sleep)
 	
 	# Put task on queue. Format H, M, S
-	daily_time = datetime.time(01, 01, 0)
+	daily_time = datetime.time(22, 9, 0)
 	first_time = dt.combine(dt.now(), daily_time)
 	print "%s -> cekam na %s\n" % (now_str(), daily_time)
 
-	start = timeit.default_timer()
-
 	# time, priority, callable, *args
-	scheduler.enterabs(time.mktime(first_time.timetuple()), 1, threadPoolExecutor, (2,))
+	scheduler.enterabs(time.mktime(first_time.timetuple()), 1, threadPoolExecutor, (regURLs,))
 	scheduler.run()
 
 	stop = timeit.default_timer()
-	print "\nTime elapsed: ", stop - start
+	print "\nTime elapsed for registration: ", stop - start, " seconds"
 
 
 
