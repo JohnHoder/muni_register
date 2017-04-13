@@ -16,8 +16,8 @@ import datetime
 import timeit
 
 #Spawn threads or processes?
-from multiprocessing.dummy import Pool as ThreadPool
-#from multiprocessing import Pool as ThreadPool
+#from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing import Pool as ThreadPool
 from multiprocessing import freeze_support
 from multiprocessing import cpu_count
 
@@ -287,7 +287,7 @@ class MuniRegister(object):
 		#find = soup(text=re.compile(r"" + "zdurazneni varovani" + ""))
 		message = bsoup.find("div", {"class": re.compile(ur'zdurazneni(.*)', re.DOTALL)}).contents
 		#print "[%s / %s] -> %s" % (lessonName, lessonGroup, self.getTextOnly(message[0]))
-		print "[%s] -> %s" % (lesson_id, self.getTextOnly(message[0]))
+		print "[%s] [%s] -> %s" % (str(dt.now()), lesson_id, self.getTextOnly(message[0]))
 
 	def __call__(self, x):
 		return self.registerLesson(x)
@@ -310,7 +310,6 @@ if __name__ == "__main__":
 
 	userData = sa.loadDataFromFile(filename)
 
-	# :(
 	processedData = sa.processData(userData)
 
 	#get list of URLs which will be clicked
