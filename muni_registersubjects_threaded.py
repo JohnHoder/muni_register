@@ -1,5 +1,6 @@
 #!/usr/bin/env
 # -*- coding: utf-8 -*-
+
 import re
 import cookielib
 import urllib
@@ -160,125 +161,24 @@ class MuniRegister(object):
 		print "\n\n\n"
 
 	def loadDataFromFile(self, filename):
-		mydata = collections.OrderedDict()
+		mydata = []
 
 		with open(filename) as f:
 			for line in f:
-				datum = line.strip().split(' ')
-				mydata[datum[0]] = datum[1]
+				mydata.append(line)
 
 		#print mydata
 		return mydata
 		
-	def processData(self, dictOfLessons):
+	def registerExam(self, url):
 
-		internalLessonDict = collections.OrderedDict()
-
-		url_faecher = ("https://is.muni.cz/auth/student/zapis?studium=%s;obdobi=%s") % (self.studium, self.season)
-
-		header={
-				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
-				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-				"Accept-Language" : "en-US,en;q=0.5",
-				"Accept-Encoding" : "gzip, deflate, br",
-				"Referer" : "https://is.muni.cz/auth/student/?studium=%s;lvs=p" % (self.studium),
-				}
-
-		#IS SOMETHING WRONG HERE? 10% chance the program will crash here
-		web_faecher = self.session.get(url_faecher, headers=header, allow_redirects=True)
-		web_faecher.encoding = 'utf-8'
-
-		soup = BeautifulSoup(web_faecher.text, "lxml")
-		#soup.prettify()
-		#print soup
-
-		for lesson in dictOfLessons:
-			lesson_id = ""
-			elems = soup(text=re.compile(r"" + lesson + ""))
-			if elems != [] and elems[0].parent['class'][0] == "okno":
-				sub = elems[0].parent.parent.parent
-				page = sub.find('a', text=re.compile(ur'zvolit(.*)', re.DOTALL), attrs={'href': re.compile(ur'' + '../seminare/student?' + '(.*)'), 'class' : 'maybe'})
-				page2 = sub.find('a', text=re.compile(ur'změnit(.*)', re.DOTALL), attrs={'href': re.compile(ur'' + '../seminare/student?' + '(.*)')})
-				if page != None:
-					print "[%s] byl pridan k casovanemu zapisu" % (lesson)
-					#print page
-					lesson_id = re.findall(r'\d+', page['href'])[3]
-				else:
-					if page2 != None:
-						print "[%s] jiz ma zvolenou seminarni skupinu" % (lesson)
-						#print "\n" , page2
-						continue
-			else:
-				print "[%s] neni registrovan!" % (lesson)
-				continue
-
-			#Assign lesson_id to study group
-			internalLessonDict[lesson_id] = dictOfLessons[lesson]
-
-			#Assign lessonName to lessonID
-			self.dictLessonsNameToID[lesson] = lesson_id
-
-		#print internalLessonDict
-		print "######################################################"
-		print "\n"
-		return internalLessonDict
-
-	def prepareRegistrationURLs(self, dictOfLessons, dictOfInternalLessons):
-
-		#print dictOfLessons
-		#print dictOfInternalLessons
-
-		listOfRegURLs = []
-
-		header1={
-				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
-				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-				"Accept-Language" : "en-US,en;q=0.5",
-				"Accept-Encoding" : "gzip, deflate, br",
-				"Referer" : "https://is.muni.cz/auth/student/zapis?studium=%s;obdobi=%s" % (self.studium, self.season),
-				}
-
-		for (lesson_id, lessonGroup), (lessonName, lessonID) in zip(dictOfInternalLessons.items(), self.dictLessonsNameToID.items()):
-			url_fach = "https://is.muni.cz/auth/seminare/student?fakulta=%s;obdobi=%s;studium=%s;akce=podrob;predmet=%s" % (self.fakulta, self.season, self.studium, lesson_id)
-
-			#print "###"
-			#print lesson_id, lessonGroup
-			#print lessonName, lessonID
-			#print "###"
-
-			res = self.session.get(url_fach, headers=header1, allow_redirects=False)
-			#res.encoding = 'utf-8'
-			soupx = BeautifulSoup(res.text, "lxml")
-
-			elems = soupx.find('h5', text=re.compile(u'' + lessonName + '/' + lessonGroup))
-
-			try:
-				sub = elems.parent.parent.parent
-			except Exception, e:
-				print "Skupina nebyla nalezena -> ", e
-				continue
-				
-			page = sub.find('a', text=re.compile(ur'zkusit se přihlásit(.*)', re.DOTALL))
-			regurl = page['href']
-			reg_id = (re.findall('(?<=prihlasit\=)\d+', regurl))[0]
-
-			url_reg = "https://is.muni.cz/auth/seminare/student?fakulta=%s;obdobi=%s;studium=%s;predmet=%s;prihlasit=%s;akce=podrob;provest=1;stopwindow=1;design=m" % (self.fakulta, self.season, self.studium, lesson_id, reg_id)
-
-			listOfRegURLs.append(url_reg)
-
-		#print listOfRegURLs
-		return listOfRegURLs
-
-	def registerLesson(self, url):
-
-		lesson_id = (re.findall('(?<=predmet\=)\d+', url))[0]
+		subject_id = (re.findall('(?<=rreg\=)\d+', url))[0]
 
 		header2={
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 				"Accept-Language" : "en-US,en;q=0.5",
 				"Accept-Encoding" : "gzip, deflate, br",
-				"Referer" : "https://is.muni.cz/auth/seminare/student?fakulta=%s;obdobi=%s;studium=%s;akce=podrob;predmet=%s" % (self.fakulta, self.season, self.studium, lesson_id),
 				}
 
 		#Here we come
@@ -289,24 +189,21 @@ class MuniRegister(object):
 		#find = soup(text=re.compile(r"" + "zdurazneni varovani" + ""))
 		message = bsoup.find("div", {"class": re.compile(ur'zdurazneni(.*)', re.DOTALL)}).contents
 		#print "[%s / %s] -> %s" % (lessonName, lessonGroup, self.getTextOnly(message[0]))
-		print "[%s] [%s] -> %s" % (str(dt.now()), lesson_id, self.getTextOnly(message[0]))
+		print "[%s] [%s] -> %s" % (str(dt.now()), subject_id, self.getTextOnly(message[0]))
 
 	def __call__(self, x):
-		return self.registerLesson(x)
+		return self.registerExam(x)
 
 
 if __name__ == "__main__":
 	freeze_support()
 
+	filename = "registersubjects.txt"
+
 	sa = MuniRegister(username, password, season, fakulta, studium)
 	sa.login()
 
-	userData = sa.loadDataFromFile(filename)
-
-	processedData = sa.processData(userData)
-
-	#get list of URLs which will be clicked
-	regURLs = sa.prepareRegistrationURLs(userData, processedData)
+	regURLs = sa.loadDataFromFile(filename)
 
 	pool = ThreadPool(cpu_count())
 	start = 0
@@ -328,9 +225,9 @@ if __name__ == "__main__":
 	scheduler = sched.scheduler(time.time, time.sleep)
 	
 	# Put task on queue. Format H, M, S
-	daily_time = datetime.time(22, 9, 0)
+	daily_time = datetime.time(17, 0, 0, 0)
 	first_time = dt.combine(dt.now(), daily_time)
-	print "%s -> cekam na %s\n" % (now_str(), daily_time)
+	print "%s -> Waiting for %s\n" % (now_str(), daily_time)
 
 	# time, priority, callable, *args
 	scheduler.enterabs(time.mktime(first_time.timetuple()), 1, threadPoolExecutor, (regURLs,))

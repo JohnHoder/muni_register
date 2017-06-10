@@ -63,14 +63,14 @@ if __name__ == "__main__":
 
 	# Build a scheduler object that will look at absolute times
 	scheduler = sched.scheduler(time.time, time.sleep)
-	
+
 	# Put task on queue. Format H, M, S
-	daily_time = datetime.time(22, 17, 50)
+	daily_time = datetime.time(16, 25, 00)
 	first_time = dt.combine(dt.now(), daily_time)
 	print "%s -> cekam na %s\n" % (now_str(), daily_time)
 
 	#start = timeit.default_timer()
-	
+
 	# time, priority, callable, *args
 	scheduler.enterabs(time.mktime(first_time.timetuple()), 1, threadPoolExecutor, (regURLs,))
 	scheduler.run()

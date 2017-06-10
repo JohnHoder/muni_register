@@ -21,6 +21,8 @@ from multiprocessing import Pool as ThreadPool
 from multiprocessing import freeze_support
 from multiprocessing import cpu_count
 
+from config import username, password, studium, fakulta, season
+
 try:
 	import requests
 	from bs4 import BeautifulSoup
@@ -169,7 +171,7 @@ class MuniRegister(object):
 		
 	def registerExam(self, url):
 
-		exam_id = (re.findall('(?<=zkt\=)\d+', url))[0]
+		#exam_id = (re.findall('(?<=zkt\=)\d+', url))[0]
 
 		header2={
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
@@ -186,7 +188,7 @@ class MuniRegister(object):
 		#find = soup(text=re.compile(r"" + "zdurazneni varovani" + ""))
 		message = bsoup.find("div", {"class": re.compile(ur'zdurazneni(.*)', re.DOTALL)}).contents
 		#print "[%s / %s] -> %s" % (lessonName, lessonGroup, self.getTextOnly(message[0]))
-		print "[%s] [%s] -> %s" % (str(dt.now()), exam_id, self.getTextOnly(message[0]))
+		#print "[%s] [%s] -> %s" % (str(dt.now()), exam_id, self.getTextOnly(message[0]))
 
 	def __call__(self, x):
 		return self.registerExam(x)
@@ -196,13 +198,6 @@ if __name__ == "__main__":
 	freeze_support()
 
 	filename = "exams.txt"
-
-	username = "userID"
-	password = "password"
-
-	season = "6684"
-	fakulta = "1422"
-	studium = "Studium ID"
 
 	sa = MuniRegister(username, password, season, fakulta, studium)
 	sa.login()
@@ -229,7 +224,7 @@ if __name__ == "__main__":
 	scheduler = sched.scheduler(time.time, time.sleep)
 	
 	# Put task on queue. Format H, M, S
-	daily_time = datetime.time(22, 41, 25)
+	daily_time = datetime.time(1, 0, 0, 0)
 	first_time = dt.combine(dt.now(), daily_time)
 	print "%s -> Waiting for %s\n" % (now_str(), daily_time)
 
