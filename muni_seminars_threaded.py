@@ -297,6 +297,8 @@ class MuniRegister(object):
 
 if __name__ == "__main__":
 	freeze_support()
+	
+	filename = "seminars.txt"
 
 	sa = MuniRegister(username, password, season, fakulta, studium)
 	sa.login()
