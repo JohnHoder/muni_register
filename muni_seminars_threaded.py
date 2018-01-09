@@ -190,15 +190,16 @@ class MuniRegister(object):
 		for x in xrange(3):  #send request three times and let's hope at least one of them will be successful
 			try:
 				print x+1
-				time.sleep(1)
 				web_faecher = self.session.get(url_faecher, headers=header, allow_redirects=True)
 				web_faecher.encoding = 'utf-8'
 				#print web_faecher.text[0:50]
+				time.sleep(1)
 			except requests.exceptions.RequestException as e:
 				print("WEIRD -> ", e)
 				pass
 			except:
 				print("Unexpected error:", sys.exc_info()[0])
+				pass
 
 		soup = BeautifulSoup(web_faecher.text, "lxml")
 		#soup.prettify()
