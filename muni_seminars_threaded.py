@@ -330,7 +330,7 @@ if __name__ == "__main__":
 	scheduler = sched.scheduler(time.time, time.sleep)
 	
 	# Put task on queue. Format H, M, S
-	daily_time = datetime.time(22, 9, 0)
+	daily_time = datetime.time(17, 0, 0)
 	first_time = dt.combine(dt.now(), daily_time)
 	print "%s -> cekam na %s\n" % (now_str(), daily_time)
 

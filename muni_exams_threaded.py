@@ -224,7 +224,7 @@ if __name__ == "__main__":
 	scheduler = sched.scheduler(time.time, time.sleep)
 	
 	# Put task on queue. Format H, M, S
-	daily_time = datetime.time(1, 0, 0, 0)
+	daily_time = datetime.time(17, 00, 0, 0)
 	first_time = dt.combine(dt.now(), daily_time)
 	print "%s -> Waiting for %s\n" % (now_str(), daily_time)
 
