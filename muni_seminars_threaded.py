@@ -125,11 +125,13 @@ class MuniRegister(object):
 
 		cookies = dict(iscreds=session1, islogincreds=session2)
 
-		payload = {"credential_0" : self.username,
+		payload = {"akce" : "login",
+					"credential_0" : self.username,
 					"credential_1" : self.password,
-					"submit" : "P%C5%99ihl%C3%A1sit+se",
-					"credential_3" : "0",
-					"credential_4" : "0"
+					#"submit" : "P%C5%99ihl%C3%A1sit+se",
+					"uloz" : "uloz",
+					#"credential_3" : "0",
+					#"credential_4" : "0"
 					}
 
 		header3={
@@ -157,7 +159,7 @@ class MuniRegister(object):
 
 		print "######################################################"
 		print "######################################################"
-		print "\n\n\n"
+		print "\n\n"
 
 	def loadDataFromFile(self, filename):
 		mydata = collections.OrderedDict()
@@ -186,14 +188,20 @@ class MuniRegister(object):
 				}
 
 		#IS SOMETHING WRONG HERE? 10% chance the program will crash here
-		#print url_faecher
-		for x in xrange(3):  #send request three times and let's hope at least one of them will be successful
+		
+		statuscode = 0
+		while statuscode != requests.codes.ok:  #send request three times and let's hope at least one of them will be successful
 			try:
-				print x+1
+				#print x+1
 				web_faecher = self.session.get(url_faecher, headers=header, allow_redirects=True)
 				web_faecher.encoding = 'utf-8'
+				statuscode = web_faecher.status_code
+				print "Cteni registrovanych predmetu OK -> ", web_faecher.status_code, "\n"
 				#print web_faecher.text[0:50]
-				time.sleep(1)
+				#file = open("output.html","w")
+				#file.write(str(web_faecher.text.encode('utf8')))
+				#file.close()
+				#time.sleep(1)
 			except requests.exceptions.RequestException as e:
 				print("WEIRD -> ", e)
 				pass
