@@ -151,7 +151,7 @@ class MuniRegister(object):
 		url_we_out_there = "https://is.muni.cz/auth/"
 
 		redir2 = self.session.get(url_we_out_there, allow_redirects=False)
-		if("administrativa" in redir2.text):
+		if("Moje aplikace" in redir2.text):
 			print "~We logged in, boyyy!"
 		else:
 			print "NOT LOGGED IN ???"

@@ -126,7 +126,7 @@ class MuniRegister(object):
 
 		cookies = dict(iscreds=session1, islogincreds=session2)
 
-		payload = {"credential_0" : self.username,
+		payload = {		"credential_0" : self.username,
 					"credential_1" : self.password,
 					"submit" : "P%C5%99ihl%C3%A1sit+se",
 					"akce" : "login",
@@ -152,8 +152,10 @@ class MuniRegister(object):
 		url_we_out_there = "https://is.muni.cz/auth/"
 
 		redir2 = self.session.get(url_we_out_there, allow_redirects=False)
-		if("administrativa" in redir2.text):
+		if("Moje aplikace" in redir2.text):
 			print "~We logged in, boyyy!"
+		else:
+			print "NOT LOGGED IN ???"
 		#print redir2.text
 
 		print "######################################################"
