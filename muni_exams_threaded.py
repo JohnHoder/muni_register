@@ -128,8 +128,8 @@ class MuniRegister(object):
 		payload = {"credential_0" : self.username,
 					"credential_1" : self.password,
 					"submit" : "P%C5%99ihl%C3%A1sit+se",
-					"credential_3" : "0",
-					"credential_4" : "0"
+					"akce" : "login",
+					"uloz" : "uloz"
 					}
 
 		header3={
@@ -153,6 +153,8 @@ class MuniRegister(object):
 		redir2 = self.session.get(url_we_out_there, allow_redirects=False)
 		if("administrativa" in redir2.text):
 			print "~We logged in, boyyy!"
+		else:
+			print "NOT LOGGED IN ???"
 		#print redir2.text
 
 		print "######################################################"
@@ -171,7 +173,7 @@ class MuniRegister(object):
 		
 	def registerExam(self, url):
 
-		#exam_id = (re.findall('(?<=zkt\=)\d+', url))[0]
+		exam_id = (re.findall('(?<=zkt\=)\d+', url))[0]
 
 		header2={
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
@@ -184,11 +186,9 @@ class MuniRegister(object):
 		reg_res = self.session.get(url, headers=header2, allow_redirects=False)
 		reg_res.encoding = 'utf-8'
 		bsoup = BeautifulSoup(reg_res.text, "lxml")
-		#print soup
-		#find = soup(text=re.compile(r"" + "zdurazneni varovani" + ""))
+		#print bsoup
 		message = bsoup.find("div", {"class": re.compile(ur'zdurazneni(.*)', re.DOTALL)}).contents
-		#print "[%s / %s] -> %s" % (lessonName, lessonGroup, self.getTextOnly(message[0]))
-		#print "[%s] [%s] -> %s" % (str(dt.now()), exam_id, self.getTextOnly(message[0]))
+		print "[%s] [%s] -> %s" % (str(dt.now()), exam_id, self.getTextOnly(message[0]))
 
 	def __call__(self, x):
 		return self.registerExam(x)

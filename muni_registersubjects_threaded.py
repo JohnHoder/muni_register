@@ -129,8 +129,8 @@ class MuniRegister(object):
 		payload = {"credential_0" : self.username,
 					"credential_1" : self.password,
 					"submit" : "P%C5%99ihl%C3%A1sit+se",
-					"credential_3" : "0",
-					"credential_4" : "0"
+					"akce" : "login",
+					"uloz" : "uloz"
 					}
 
 		header3={

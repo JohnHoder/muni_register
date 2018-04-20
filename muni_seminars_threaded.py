@@ -125,13 +125,12 @@ class MuniRegister(object):
 
 		cookies = dict(iscreds=session1, islogincreds=session2)
 
-		payload = {"akce" : "login",
+		payload = {
+					"akce" : "login",
 					"credential_0" : self.username,
 					"credential_1" : self.password,
-					#"submit" : "P%C5%99ihl%C3%A1sit+se",
-					"uloz" : "uloz",
-					#"credential_3" : "0",
-					#"credential_4" : "0"
+					"submit" : "P%C5%99ihl%C3%A1sit+se",
+					"uloz" : "uloz"
 					}
 
 		header3={
@@ -155,6 +154,8 @@ class MuniRegister(object):
 		redir2 = self.session.get(url_we_out_there, allow_redirects=False)
 		if("administrativa" in redir2.text):
 			print "~We logged in, boyyy!"
+		else:
+			print "NOT LOGGED IN ???"
 		#print redir2.text
 
 		print "######################################################"
