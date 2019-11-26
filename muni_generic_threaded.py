@@ -86,7 +86,7 @@ class MuniRegister(object):
 		print "\n"
 		print "######################################################"
 
-		header2={
+		header2 =	{
 				"Host" : "muni.islogin.cz",
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -125,14 +125,15 @@ class MuniRegister(object):
 
 		cookies = dict(iscreds=session1, islogincreds=session2)
 
-		payload = {		"credential_0" : self.username,
-					"credential_1" : self.password,
-					"submit" : "P%C5%99ihl%C3%A1sit+se",
-					"akce" : "login",
-					"uloz" : "uloz"
-					}
+		payload = 	{
+				"credential_0" : self.username,
+				"credential_1" : self.password,
+				"submit" : "P%C5%99ihl%C3%A1sit+se",
+				"akce" : "login",
+				"uloz" : "uloz"
+				}
 
-		header3={
+		header3 =	{
 				"Host" : "muni.islogin.cz",
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -173,7 +174,7 @@ class MuniRegister(object):
 		
 	def visitUrl(self, url):
 
-		header2={
+		header2 =	{
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 				"Accept-Language" : "en-US,en;q=0.5",
@@ -218,7 +219,7 @@ if __name__ == "__main__":
 	scheduler = sched.scheduler(time.time, time.sleep)
 	
 	# Put task on queue. Format H, M, S
-	daily_time = datetime.time(1, 00, 0, 0)
+	daily_time = datetime.time(17, 00, 0, 0)
 	first_time = dt.combine(dt.now(), daily_time)
 	print "%s -> Waiting for %s\n" % (now_str(), daily_time)
 

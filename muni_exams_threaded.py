@@ -86,7 +86,7 @@ class MuniRegister(object):
 		print "\n"
 		print "######################################################"
 
-		header2={
+		header2 = 	{
 				"Host" : "muni.islogin.cz",
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -125,14 +125,15 @@ class MuniRegister(object):
 
 		cookies = dict(iscreds=session1, islogincreds=session2)
 
-		payload = {"credential_0" : self.username,
-					"credential_1" : self.password,
-					"submit" : "P%C5%99ihl%C3%A1sit+se",
-					"akce" : "login",
-					"uloz" : "uloz"
-					}
+		payload = 	{
+				"credential_0" : self.username,
+				"credential_1" : self.password,
+				"submit" : "P%C5%99ihl%C3%A1sit+se",
+				"akce" : "login",
+				"uloz" : "uloz"
+				}
 
-		header3={
+		header3 =	{
 				"Host" : "muni.islogin.cz",
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -170,12 +171,12 @@ class MuniRegister(object):
 
 		#print mydata
 		return mydata
-		
+
 	def registerExam(self, url):
 
 		exam_id = (re.findall('(?<=zkt\=)\d+', url))[0]
 
-		header2={
+		header2 =	{
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 				"Accept-Language" : "en-US,en;q=0.5",
@@ -187,8 +188,15 @@ class MuniRegister(object):
 		reg_res.encoding = 'utf-8'
 		bsoup = BeautifulSoup(reg_res.text, "lxml")
 		#print bsoup
-		message = bsoup.find("div", {"class": re.compile(ur'zdurazneni(.*)', re.DOTALL)}).contents
-		print "[%s] [%s] -> %s" % (str(dt.now()), exam_id, self.getTextOnly(message[0]))
+		message = bsoup.find("div", {"class" : re.compile("^zdurazneni\s(potvrzeni|varovani|chyba)"), "id" : re.compile("^\w{5}")})   #.find("h3")
+		# This does not work anymore with the new update of IS
+		#message = bsoup.find("div", {"class": re.compile(ur'zdurazneni(.*)', re.DOTALL)}).contents
+
+		try:
+			print "[%s] [%s] -> %s" % (str(dt.now()), exam_id, self.getTextOnly(message.contents[0]))
+		except:
+			print "[%s] [%s] -> %s" % (str(dt.now()), exam_id, "Didn't find expected response. Something went wrong?")
+			pass
 
 	def __call__(self, x):
 		return self.registerExam(x)
@@ -222,7 +230,7 @@ if __name__ == "__main__":
 
 	# Build a scheduler object that will look at absolute times
 	scheduler = sched.scheduler(time.time, time.sleep)
-	
+
 	# Put task on queue. Format H, M, S
 	daily_time = datetime.time(17, 00, 0, 0)
 	first_time = dt.combine(dt.now(), daily_time)

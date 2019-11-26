@@ -86,7 +86,7 @@ class MuniRegister(object):
 		print "\n"
 		print "######################################################"
 
-		header2={
+		header2 =       {
 				"Host" : "muni.islogin.cz",
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -96,7 +96,7 @@ class MuniRegister(object):
 				"Upgrade-Insecure-Requests" : "1",
 				"Connection" : "close",
 				"Content-Type" : "application/x-www-form-urlencoded",
-				}
+			        }
 
 		get_params = {}
 
@@ -125,14 +125,15 @@ class MuniRegister(object):
 
 		cookies = dict(iscreds=session1, islogincreds=session2)
 
-		payload = {		"akce" : "login",
+		payload =		{
+					"akce" : "login",
 					"credential_0" : self.username,
 					"credential_1" : self.password,
 					"submit" : "P%C5%99ihl%C3%A1sit+se",
 					"uloz" : "uloz"
 					}
 
-		header3={
+		header3 =       {
 				"Host" : "muni.islogin.cz",
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -179,7 +180,7 @@ class MuniRegister(object):
 
 		url_faecher = ("https://is.muni.cz/auth/student/zapis?studium=%s;obdobi=%s") % (self.studium, self.season)
 
-		header={
+		header =        {
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 				"Accept-Language" : "en-US,en;q=0.5",
@@ -251,7 +252,7 @@ class MuniRegister(object):
 
 		listOfRegURLs = []
 
-		header1={
+		header1 =       {
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 				"Accept-Language" : "en-US,en;q=0.5",
@@ -294,7 +295,7 @@ class MuniRegister(object):
 
 		lesson_id = (re.findall('(?<=predmet\=)\d+', url))[0]
 
-		header2={
+		header2 =       {
 				"User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				"Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 				"Accept-Language" : "en-US,en;q=0.5",
@@ -306,11 +307,18 @@ class MuniRegister(object):
 		reg_res = self.session.get(url, headers=header2, allow_redirects=False)
 		reg_res.encoding = 'utf-8'
 		bsoup = BeautifulSoup(reg_res.text, "lxml")
-		#print soup
-		#find = soup(text=re.compile(r"" + "zdurazneni varovani" + ""))
-		message = bsoup.find("div", {"class": re.compile(ur'zdurazneni(.*)', re.DOTALL)}).contents
+		#print bsoup
+		message = bsoup.find("div", {"class" : re.compile("^zdurazneni\s(potvrzeni|varovani|chyba)"), "id" : re.compile("^\w{5}")})   #.find("h3")
+		# This does not work anymore with the new update of IS
+		#message = bsoup.find("div", {"class": re.compile(ur'zdurazneni(.*)', re.DOTALL)}).contents
+
 		#print "[%s / %s] -> %s" % (lessonName, lessonGroup, self.getTextOnly(message[0]))
-		print "[%s] [%s] -> %s" % (str(dt.now()), lesson_id, self.getTextOnly(message[0]))
+
+		try:
+			print "[%s] [%s] -> %s" % (str(dt.now()), lesson_id, self.getTextOnly(message.contents[0]))
+		except:
+			print "[%s] [%s] -> %s" % (str(dt.now()), lesson_id, "Didn't find expected response. Something went wrong?")
+			pass
 
 	def __call__(self, x):
 		return self.registerLesson(x)
