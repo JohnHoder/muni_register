@@ -6,7 +6,7 @@ You need to have the following python libraries installed on your system to use 
 
     sudo pip install bs4 requests lxml
     
-Set up your IS login credentials and other required variables in `config.py'
+Set up your IS login credentials and other required variables in `config.py`
 
     vi config.py
     

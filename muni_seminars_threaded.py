@@ -188,7 +188,7 @@ class MuniRegister(object):
 				"Referer" : "https://is.muni.cz/auth/student/?studium=%s;lvs=p" % (self.studium),
 				}
 
-		#IS SOMETHING WRONG HERE? 10% chance the program will crash here
+		#IS SOMETHING WRONG HERE? Ca. 10% chance the program will crash here
 		
 		statuscode = 0
 		while statuscode != requests.codes.ok:  #send request three times and let's hope at least one of them will be successful
@@ -216,14 +216,30 @@ class MuniRegister(object):
 
 		for lesson in dictOfLessons:
 			lesson_id = ""
-			elems = soup(text=re.compile(r"" + lesson + ""))
-			if elems != [] and elems[0].parent['class'][0] == "okno":
-				sub = elems[0].parent.parent.parent
-				page = sub.find('a', text=re.compile(ur'zvolit(.*)', re.DOTALL), attrs={'href': re.compile(ur'' + '../seminare/student?' + '(.*)'), 'class' : 'maybe'})
+			elems = soup(text=re.compile(r"" + lesson + "") )#, attrs={'target': '_blank', 'class': 'okno'})
+			#print "\n"+str(elems)
+			if elems != []:
+				# We need to make sure that the right element is picked up to ensure it is really registered
+				# and that the subject code does not appear just by accident in a prerequisite
+				the_right_elem = None
+				for elem in elems:
+					#print "\n"+str(elem.parent)
+					try:
+						if elem.parent['class'][0] == "okno" and elem.parent['target'] == "_blank":
+							the_right_elem = elem
+							break
+					except Exception as e:
+						#print "passed variable association due to: " + str(e)
+						pass
+
+				#print "The right elem: " + str(the_right_elem)
+
+				sub = the_right_elem.parent.parent.parent
+				#print sub
+				page = sub.find('a', text=re.compile(ur'zvolit(.*)', re.DOTALL), attrs={'href': re.compile(ur'' + '../seminare/student?' + '(.*)'), 'class': 'maybe'})
 				page2 = sub.find('a', text=re.compile(ur'změnit(.*)', re.DOTALL), attrs={'href': re.compile(ur'' + '../seminare/student?' + '(.*)')})
 				if page != None:
 					print "[%s] byl pridan k casovanemu zapisu" % (lesson)
-					#print page
 					lesson_id = re.findall(r'\d+', page['href'])[3]
 				else:
 					if page2 != None:
