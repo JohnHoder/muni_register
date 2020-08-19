@@ -173,7 +173,7 @@ class MuniRegister(object):
 
 		#print mydata
 		return mydata
-		
+
 	def processData(self, dictOfLessons):
 
 		internalLessonDict = collections.OrderedDict()
@@ -189,7 +189,7 @@ class MuniRegister(object):
 				}
 
 		#IS SOMETHING WRONG HERE? Ca. 10% chance the program will crash here
-		
+
 		statuscode = 0
 		while statuscode != requests.codes.ok:  #send request three times and let's hope at least one of them will be successful
 			try:
@@ -292,13 +292,12 @@ class MuniRegister(object):
 
 			try:
 				sub = elems.parent.parent.parent
+				page = sub.find('a', text=re.compile(ur'zkusit se přihlásit(.*)', re.DOTALL))
+				regurl = page['href']
+				reg_id = (re.findall('(?<=prihlasit\=)\d+', regurl))[0]
 			except Exception, e:
-				print "Skupina nebyla nalezena -> ", e
+				print "[{}] cislo seminarni skupiny nebylo nalezeno -> {}".format(lessonName, e)
 				continue
-				
-			page = sub.find('a', text=re.compile(ur'zkusit se přihlásit(.*)', re.DOTALL))
-			regurl = page['href']
-			reg_id = (re.findall('(?<=prihlasit\=)\d+', regurl))[0]
 
 			url_reg = "https://is.muni.cz/auth/seminare/student?fakulta=%s;obdobi=%s;studium=%s;predmet=%s;prihlasit=%s;akce=podrob;provest=1;stopwindow=1;design=m" % (self.fakulta, self.season, self.studium, lesson_id, reg_id)
 
@@ -324,9 +323,11 @@ class MuniRegister(object):
 		reg_res.encoding = 'utf-8'
 		bsoup = BeautifulSoup(reg_res.text, "lxml")
 		#print bsoup
-		message = bsoup.find("div", {"class" : re.compile("^zdurazneni\s(potvrzeni|varovani|chyba)"), "id" : re.compile("^\w{5}")})   #.find("h3")
+		message = bsoup.find("div", {"class" : re.compile("^zdurazneni\s(potvrzeni|varovani|chyba)")})   #.find("h3")
 		# This does not work anymore with the new update of IS
 		#message = bsoup.find("div", {"class": re.compile(ur'zdurazneni(.*)', re.DOTALL)}).contents
+		# Attribute id is not present in each type of response (such as Úspěšně provedeno.)
+		#, "id" : re.compile("^\w{5}")
 
 		#print "[%s / %s] -> %s" % (lessonName, lessonGroup, self.getTextOnly(message[0]))
 
@@ -342,7 +343,7 @@ class MuniRegister(object):
 
 if __name__ == "__main__":
 	freeze_support()
-	
+
 	filename = "seminars.txt"
 
 	sa = MuniRegister(username, password, season, fakulta, studium)
@@ -373,9 +374,9 @@ if __name__ == "__main__":
 
 	# Build a scheduler object that will look at absolute times
 	scheduler = sched.scheduler(time.time, time.sleep)
-	
+
 	# Put task on queue. Format H, M, S
-	daily_time = datetime.time(17, 0, 0)
+	daily_time = datetime.time(0, 0, 0)
 	first_time = dt.combine(dt.now(), daily_time)
 	print "%s -> cekam na %s\n" % (now_str(), daily_time)
 
