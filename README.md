@@ -18,6 +18,8 @@ Script `muni_exams_threaded.py` registers the exam termins for you. Similarly to
 
     https://is.muni.cz/auth/student/prihl_na_zkousky?fakulta=0000;obdobi=0000;studium=000000;predmet=0000000;zkt=000000;prihlasit=1;stopwindow=1
 
+Finally, script `muni_generic_threaded.py` can be used to execute any generic action in IS the purpose of which is not covered in the aforementioned scripts. Make your changes to `generic.txt`, again in URL format, one URL per line.
+
 ## How to use
 
 You need to have the following python libraries installed on your system to use the scripts.
@@ -28,7 +30,8 @@ Set up your IS login credentials and other required variables in `config.py`.
 
     vi config.py
 
-If you do not know where to get the required information, refer to the URL of any of your registrations, such as URLs indicated above.
+In `config.py` there is also set the time all the scripts should run at. There are four variables for that (time_hours, time_minutes, time_seconds, time_microseconds) the names of which are self-explanatory.
+If you do not know where to get the required information to set all the variables, refer to the URL of any of your registrations, such as the URLs indicated above.
 
 Make the required changes according to your needs to `registersubjects.txt`, `seminars.txt`, `exams.txt` or `generic.txt`. Refer to the required syntax by each above.
 
