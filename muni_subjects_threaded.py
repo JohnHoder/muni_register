@@ -23,6 +23,7 @@ from multiprocessing import freeze_support
 from multiprocessing import cpu_count
 
 from config import username, password, studium, fakulta, season
+from config import time_hours, time_minutes, time_seconds, time_microseconds
 
 try:
 	import requests
@@ -211,7 +212,7 @@ class MuniRegister(object):
 if __name__ == "__main__":
 	freeze_support()
 
-	filename = "registersubjects.txt"
+	filename = "subjects.txt"
 
 	sa = MuniRegister(username, password, season, fakulta, studium)
 	sa.login()
@@ -238,7 +239,7 @@ if __name__ == "__main__":
 	scheduler = sched.scheduler(time.time, time.sleep)
 	
 	# Put task on queue. Format H, M, S
-	daily_time = datetime.time(17, 0, 0, 0)
+	daily_time = datetime.time(time_hours, time_minutes, time_seconds, time_microseconds)
 	first_time = dt.combine(dt.now(), daily_time)
 	print "%s -> Waiting for %s\n" % (now_str(), daily_time)
 
