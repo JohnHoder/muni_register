@@ -25,13 +25,20 @@ Finally, script `muni_generic_threaded.py` can be used to execute any generic ac
 You need to have the following python libraries installed on your system to use the scripts.
 
     sudo pip install bs4 requests lxml
+    
+If you are using python2, pip support for 2.7 has probably been removed from your system and you will have to get it by some workaround like this:
+
+    sudo dnf -y install https://github.com/UnitedRPMs/unitedrpms/releases/download/17/unitedrpms-$(rpm -E %fedora)-17.fc$(rpm -E %fedora).noarch.rpm                       
+    sudo dnf install python2-pip
+    
+Or preferably, of course, use python3 and alter the scripts appropriately.
 
 Set up your IS login credentials and other required variables in `config.py`.
 
     vi config.py
 
-In `config.py` there is also set the time all the scripts should run at. There are four variables for that (`time_hours`, `time_minutes`, `time_seconds`, `time_microseconds`) the names of which are self-explanatory.
-If you do not know where to get the required information to set all the variables, refer to the URL of any of your registrations, such as the URLs indicated above.
+In `config.py` there is, inter alia, setting for exact time all the scripts should run at. There are four variables for that (`time_hours`, `time_minutes`, `time_seconds`, `time_microseconds`) the names of which make their meaning self-explanatory.
+If you do not know where to get the required information to set all the variables, refer to the URL of any of your registrations (such as the URLs indicated above).
 
 Make the required changes according to your needs to `subjects.txt`, `seminars.txt`, `exams.txt` or `generic.txt`. Refer above to the syntax required by each of the mentioned files.
 
